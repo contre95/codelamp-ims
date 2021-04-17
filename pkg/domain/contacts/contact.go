@@ -1,7 +1,9 @@
 package contacts
 
 type Contact struct {
-	id    int
-	name  string
-	phone string
+	ID        int
+	FirstName string
+	LastName  string
+	Phone     string
+	Comments  string
 }
