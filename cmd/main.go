@@ -1,7 +1,7 @@
 package main
 
 import (
-	"codelamp-ims/pkg/domain/contact"
+	"codelamp-ims/pkg/domain/contacts"
 	"codelamp-ims/pkg/gateways/storage/sql"
 
 	"gorm.io/driver/sqlite"
@@ -22,8 +22,8 @@ func main() {
 		panic("failed to connect database")
 	}
 
-	contactRepo := sql.NewContactRepository(db)
-	contact := contact.NewService(contactRepo)
+	contactRepo := sql.NewSQLRepository(db)
+	contact := contacts.NewService(contactRepo)
 
 	// Migrate the schema
 	//db.AutoMigrate(&Product{})
@@ -42,6 +42,6 @@ func main() {
 	//db.Model(&product).Updates(Product{Price: 200, Code: "F42"}) // non-zero fields
 	//db.Model(&product).Updates(map[string]interface{}{"Price": 200, "Code": "F42"})
 
-	//// Delete - delete product
-	////db.Delete(&product, 1)
+	//// DeleteContact - delete product
+	////db.DeleteContact(&product, 1)
 }
