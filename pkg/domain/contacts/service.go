@@ -1,12 +1,11 @@
 package contacts
 
-type Repository interface {
+type Repo interface {
 	AddContact(name, phone string) error
+	ListContacts(name, phone string) ([]Contact, error)
+	GetContact(id int) (Contact, error)
+	UpdateContact(name, phone string) error
 	DeleteContact() error
-	//Don't worry about the double naming (contact package and contactXxxx methods)
-	//because outside this package you will instantiate a svc := NewService()...
-	//and then the calls to this methods will be something like this:
-	//svc.AddContact("Lucas", "Trolazo")
 }
 
 type Service interface {
@@ -15,10 +14,10 @@ type Service interface {
 }
 
 type service struct {
-	repo Repository
+	repo Repo
 }
 
-func NewService(repo Repository) Service {
+func NewService(repo Repo) Service {
 	return &service{repo}
 }
 

@@ -4,18 +4,11 @@ import (
 	"gorm.io/gorm"
 )
 
-type contactTable struct {
-	gorm.Model
-	name  string
-	phone string
-}
-
-type Repository struct {
+type SQLStorage struct {
 	db *gorm.DB
 }
 
-func NewSQLRepository(db *gorm.DB) *Repository {
+func NewSQLRepository(db *gorm.DB) *SQLStorage {
 	db.AutoMigrate(&contactTable{})
-	return &Repository{db}
+	return &SQLStorage{db}
 }
-
