@@ -1,6 +1,6 @@
 package contacts
 
-type ContactID int
+type ContactID uint
 
 type Contact struct {
 	ID        ContactID

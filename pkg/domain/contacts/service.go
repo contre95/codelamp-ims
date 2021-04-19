@@ -1,15 +1,20 @@
 package contacts
 
+import (
+	"errors"
+	"fmt"
+)
+
 type Repo interface {
-	AddContact(name, phone string) error
-	ListContacts(name, phone string) ([]Contact, error)
-	GetContact(id int) (Contact, error)
-	UpdateContact(name, phone string) error
-	DeleteContact() error
+	AddContact(c Contact) error
+	ListContacts() ([]Contact, error)
+	GetContact(id ContactID) (*Contact, error)
+	UpdateContact(c Contact) error
+	DeleteContact(id ContactID) (*Contact, error)
 }
 
 type Service interface {
-	Create(name, phone string) error
+	Create(c Contact) error
 	List() ([]Contact, error)
 }
 
@@ -21,17 +26,18 @@ func NewService(repo Repo) Service {
 	return &service{repo}
 }
 
-func (s *service) Create(name, phone string) error {
-	if len(name) > 10 {
-		panic("name can not be longer than 10")
-	}
-	err := s.repo.AddContact(name, phone)
+func (s *service) Create(c Contact) error {
+	err := s.repo.AddContact(c)
 	if err != nil {
-		return err
+		return errors.New(fmt.Sprintf("could not create contact: %s", err))
 	}
 	return nil
 }
 
 func (s *service) List() ([]Contact, error) {
-	panic("Implement me !")
+	contacts, err := s.repo.ListContacts()
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("could not get contacts: %s", err))
+	}
+	return contacts, nil
 }

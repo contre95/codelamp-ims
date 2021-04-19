@@ -8,7 +8,12 @@ type SQLStorage struct {
 	db *gorm.DB
 }
 
-func NewSQLRepository(db *gorm.DB) *SQLStorage {
-	db.AutoMigrate(&contactTable{})
+func NewStorage(db *gorm.DB) *SQLStorage {
 	return &SQLStorage{db}
+}
+
+func (sql *SQLStorage) Migrate() {
+	sql.db.AutoMigrate(&contactDB{})
+	sql.db.AutoMigrate(&projectDB{})
+
 }

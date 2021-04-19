@@ -1,21 +1,26 @@
 package sql
 
-import "gorm.io/gorm"
+import (
+	"codelamp-ims/pkg/domain/contacts"
+	"time"
 
-type projectTable struct {
+	"gorm.io/gorm"
+)
+
+type ProjectID int
+type ProjectType string
+type ProjectState string
+
+type projectDB struct {
 	gorm.Model
-	name  string
-	phone string
+	ID            ProjectID
+	Name          string
+	StartDate     time.Time
+	FinishDate    time.Time
+	Website       string
+	GitRepository string
+	Type          ProjectType
+	State         ProjectState
+	Tag           string
+	Contacts      []contacts.Contact // A mi hace ruido esto
 }
-
-func (r *SQLStorage) DeleteProject() error {
-	panic("not implemented") // TODO: Implement
-}
-
-func (r *SQLStorage) AddProject(name, phone string) error {
-	r.db.Create(&projectTable{
-		name:  name,
-		phone: phone,
-	})
-	return nil
-

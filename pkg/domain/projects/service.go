@@ -1,13 +1,17 @@
 package projects
 
-import "codelamp-ims/pkg/domain/contacts"
+import (
+	"codelamp-ims/pkg/domain/contacts"
+	"errors"
+	"log"
+)
 
 type Repo interface {
-	AddProject(name, phone string) error
+	AddProject(c Project) error
 	ListProjects() ([]Project, error)
-	GetProject(id ProjectID) (Project, error)
-	UpdateProject(name, phone string) error
-	DeleteProject() error
+	GetProject(id ProjectID) (*Project, error)
+	UpdateContact(c Project) error
+	DeleteProject(id ProjectID) (*Project, error)
 }
 
 type Service interface {
@@ -26,11 +30,22 @@ func NewService(repo Repo) Service {
 }
 
 func (s *service) Create(p Project) error {
-	panic("not implemented") // TODO: Implement
+	err := s.repo.AddProject(p)
+	if err != nil {
+		log.Printf("Could not create project %s \n", p.Name)
+		return errors.New("Couldn't create project.")
+	}
+	return nil
 }
 
 func (s *service) Delete(id ProjectID) error {
-	panic("not implemented") // TODO: Implement
+	p, err := s.repo.DeleteProject(id)
+	if err != nil {
+		log.Printf("Could not delete project \n")
+		return errors.New("Couldn't delete project.")
+	}
+	log.Printf("Project %s was deleted succesfully", p.Name) // Deletion along with contacts?
+	return nil
 }
 
 func (s *service) ListProjects() ([]Project, error) {
