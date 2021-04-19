@@ -2,7 +2,7 @@ package main
 
 import "codelamp-ims/pkg/domain/contacts"
 
-var sampleContacts = []contacts.Contact{
+var SampleContacts = []contacts.Contact{
 	{
 		FirstName: "Charles",
 		LastName:  "Gaona",

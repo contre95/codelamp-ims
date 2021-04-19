@@ -68,7 +68,7 @@ func (sql *SQLStorage) GetContact(id contacts.ContactID) (*contacts.Contact, err
 	return parseDBContact(dbContact), nil
 }
 
-func (sql *SQLStorage) UpdateContact(c *contacts.Contact) error {
+func (sql *SQLStorage) UpdateContact(c contacts.Contact) error {
 	var dbContact contactDB
 	result := sql.db.First(dbContact, c.ID)
 	if result.Error != nil {
@@ -86,10 +86,15 @@ func (sql *SQLStorage) UpdateContact(c *contacts.Contact) error {
 	return nil
 }
 
-func (sql *SQLStorage) DeleteContact(id contacts.ContactID) error {
-	result := sql.db.Delete(&contactDB{}, id)
-	if result.Error != nil {
-		return errors.New(fmt.Sprintf("Could not delete contact: %s \n", result.Error))
+func (sql *SQLStorage) DeleteContact(id contacts.ContactID) (*contacts.Contact, error) {
+	var dbContact contactDB
+	result_get := sql.db.First(&dbContact, id)
+	if result_get.Error != nil {
+		return nil, errors.New(fmt.Sprintf("Could not retrieve contact: %s \n", result_get.Error))
 	}
-	return nil
+	result_delete := sql.db.Delete(&contactDB{}, id)
+	if result_delete.Error != nil {
+		return nil, errors.New(fmt.Sprintf("Could not delete contact: %s \n", result_delete.Error))
+	}
+	return parseDBContact(dbContact), nil
 }
