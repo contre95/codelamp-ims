@@ -12,9 +12,9 @@ type Repo interface {
 	UpdateClient(c Client) error
 	DeleteClient(id ClientID) (*Client, error)
 
-	AddProject(cid ClientID, p Project) (ProjectID, error)
+	AddProject(cid ClientID, p Project) (*ProjectID, error)
 	GetProjects(cid ClientID) ([]Project, error)
-	GetProject(cid ClientID) (*Project, error)
+	GetProject(cid ClientID, pid ProjectID) (*Project, error)
 	UpdateProjct(p Project) error
 	DeleteProject(pid ProjectID) (*Project, error)
 }
@@ -26,11 +26,12 @@ type Service interface {
 	Get(cid ClientID) (*Client, error)
 	List() ([]Client, error)
 
-	AddProjects(cid ClientID, p []Project) error
-	CreateProject(cid ClientID, p Project) error
+	AttachProjects(cid ClientID, p []Project) error
+	CreateProject(cid ClientID, p Project) (*ProjectID, error)
 	GetProjects(cid ClientID) ([]Project, error)
+	GetProject(cid ClientID, pid ProjectID) (*Project, error)
 	RemoveProjects(cid ClientID) ([]Project, error)
-	RemoveProject(cid ClientID, pid ProjectID) (Project, error)
+	RemoveProject( /*cid ClientID,*/ pid ProjectID) (*Project, error)
 	UpdateProject(cid ClientID, p Project) error
 }
 
@@ -47,7 +48,7 @@ func (s *service) Create(client Client) (*ClientID, error) {
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("Could not create client %s", client.Name))
 	}
-	errp := s.AddProjects(*cid, client.projects)
+	errp := s.AttachProjects(*cid, client.projects)
 	if errp != nil {
 		return nil, errors.New(fmt.Sprintf("Could not add projects to client %s", client.Name))
 	}
@@ -65,7 +66,7 @@ func (s *service) Get(cid ClientID) (*Client, error) {
 func (s *service) Delete(cid ClientID) (*Client, error) {
 	_, errc := s.RemoveProjects(cid)
 	if errc != nil {
-		return nil, errors.New("Could not clear projects from clients")
+		return nil, errc
 	}
 	c, err := s.repo.DeleteClient(cid)
 	if err != nil {
@@ -80,7 +81,7 @@ func (s *service) UpdateInfo(client Client) error {
 		return errors.New("Could not update client information.")
 	}
 	// TODO: No sé si está tan bueno updatear los projects | hacer un diff con los nuevos/existentes | borrar todos y agregar los nuevos
-	//errcp := s.AddProjects(client.ID, client.projects)
+	//errcp := s.AttachProjects(client.ID, client.projects)
 	//if errcp != nil {
 	//return errors.New(fmt.Sprintf("Could not attach projects to client %s", client.Name))
 	//}
@@ -95,32 +96,66 @@ func (s *service) List( /*itermPerPage, page, int*/ ) ([]Client, error) {
 	return clients, nil
 }
 
-func (s *service) AddProjects(cid ClientID, projects []Project) error {
+func (s *service) AttachProjects(cid ClientID, projects []Project) error {
 	for _, p := range projects {
-		err := s.CreateProject(cid, p)
+		_, err := s.CreateProject(cid, p)
 		if err != nil {
-			return errors.New("Could not create projects")
+			return err
 		}
 	}
 	return nil
 }
 
-func (s *service) CreateProject(cid ClientID, p Project) error {
-
+func (s *service) CreateProject(cid ClientID, p Project) (*ProjectID, error) {
+	pid, err := s.repo.AddProject(cid, p)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("Could not create project %s", p.Name))
+	}
+	return pid, nil
 }
 
 func (s *service) GetProjects(cid ClientID) ([]Project, error) {
-	panic("not implemented") // TODO: Implement
+	projects, err := s.repo.GetProjects(cid)
+	if err != nil {
+		return nil, errors.New("Could not get projects from client.")
+	}
+	return projects, nil
 }
 
-func (s *service) RemoveProject(cid ClientID, pid ProjectID) (Project, error) {
-	panic("not implemented") // TODO: Implement
-}
-
-func (s *service) RemoveProjects(cid ClientID) ([]Project, error) {
-	panic("not implemented") // TODO: Implement
+func (s *service) GetProject(cid ClientID, pid ProjectID) (*Project, error) {
+	p, err := s.repo.GetProject(cid, pid)
+	if err != nil {
+		return nil, errors.New("Could not get projects from client.")
+	}
+	return p, nil
 }
 
 func (s *service) UpdateProject(cid ClientID, p Project) error {
-	panic("not implemented") // TODO: Implement
+	err := s.repo.UpdateProjct(p)
+	if err != nil {
+		return errors.New("Could not update project")
+	}
+	return nil
+}
+func (s *service) RemoveProject( /*cid ClientID,*/ pid ProjectID) (*Project, error) {
+	p, err := s.repo.DeleteProject(pid)
+	if err != nil {
+		return nil, errors.New("Could not delete project.")
+	}
+	return p, nil
+
+}
+
+func (s *service) RemoveProjects(cid ClientID) ([]Project, error) {
+	projects, err := s.GetProjects(cid)
+	if err != nil {
+		return nil, err
+	}
+	for _, p := range projects {
+		_, err := s.RemoveProject(p.ID)
+		if err != nil {
+			return nil, errors.New(fmt.Sprintf("Could not remove project %s", p.Name))
+		}
+	}
+	return projects, nil
 }

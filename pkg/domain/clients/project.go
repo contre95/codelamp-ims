@@ -10,6 +10,7 @@ type ProjectType string
 type ProjectState string
 
 type Project struct {
+	ID            ProjectID
 	Name          string
 	StartDate     time.Time
 	FinishDate    time.Time
