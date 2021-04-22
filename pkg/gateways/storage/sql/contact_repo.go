@@ -9,25 +9,25 @@ import (
 	"gorm.io/gorm"
 )
 
-type ContactID int
-
-type contactDB struct {
+type Contact struct {
 	gorm.Model
 	FirstName string
 	LastName  string
 	Phone     string
 	Comments  string
+	ProjectID uint
 }
 
-func parseDomainContact(c contacts.Contact) *contactDB {
-	return &contactDB{
+func parseDomainContact(c contacts.Contact) *Contact {
+	return &Contact{
 		FirstName: c.FirstName,
 		LastName:  c.LastName,
 		Phone:     c.Phone,
 		Comments:  c.Comments,
 	}
 }
-func parseDBContact(dbc contactDB) *contacts.Contact {
+
+func parseDBContact(dbc Contact) *contacts.Contact {
 	return &contacts.Contact{
 		ID:        contacts.ContactID(dbc.ID),
 		FirstName: dbc.FirstName,
@@ -38,8 +38,8 @@ func parseDBContact(dbc contactDB) *contacts.Contact {
 }
 
 func (sql *SQLStorage) AddContact(c contacts.Contact) error {
-	contactDB := parseDomainContact(c)
-	result := sql.db.Create(contactDB)
+	Contact := parseDomainContact(c)
+	result := sql.db.Create(Contact)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -47,7 +47,7 @@ func (sql *SQLStorage) AddContact(c contacts.Contact) error {
 }
 
 func (sql *SQLStorage) ListContacts() ([]contacts.Contact, error) {
-	var dbContacts []contactDB
+	var dbContacts []Contact
 	result := sql.db.Find(&dbContacts)
 	if result.Error != nil {
 		return nil, errors.New(fmt.Sprintf("Could not fetch contacts: %s \n", result.Error))
@@ -60,7 +60,7 @@ func (sql *SQLStorage) ListContacts() ([]contacts.Contact, error) {
 }
 
 func (sql *SQLStorage) GetContact(id contacts.ContactID) (*contacts.Contact, error) {
-	var dbContact contactDB
+	var dbContact Contact
 	result := sql.db.First(&dbContact, id)
 	if result.Error != nil {
 		return nil, errors.New(fmt.Sprintf("Could not retrieve contact: %s \n", result.Error))
@@ -69,7 +69,7 @@ func (sql *SQLStorage) GetContact(id contacts.ContactID) (*contacts.Contact, err
 }
 
 func (sql *SQLStorage) UpdateContact(c contacts.Contact) error {
-	var dbContact contactDB
+	var dbContact Contact
 	result := sql.db.First(dbContact, c.ID)
 	if result.Error != nil {
 		return errors.New(fmt.Sprintf("Could not update contact (contact %s not found): %s \n", c.FirstName, result.Error))
@@ -87,12 +87,12 @@ func (sql *SQLStorage) UpdateContact(c contacts.Contact) error {
 }
 
 func (sql *SQLStorage) DeleteContact(id contacts.ContactID) (*contacts.Contact, error) {
-	var dbContact contactDB
+	var dbContact Contact
 	result_get := sql.db.First(&dbContact, id)
 	if result_get.Error != nil {
 		return nil, errors.New(fmt.Sprintf("Could not retrieve contact: %s \n", result_get.Error))
 	}
-	result_delete := sql.db.Delete(&contactDB{}, id)
+	result_delete := sql.db.Delete(&Contact{}, id)
 	if result_delete.Error != nil {
 		return nil, errors.New(fmt.Sprintf("Could not delete contact: %s \n", result_delete.Error))
 	}
