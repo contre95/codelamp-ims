@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type ClientID int
+type ClientID uint
 type ClientType string
 type ClientState string
 
