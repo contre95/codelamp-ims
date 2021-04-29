@@ -18,25 +18,6 @@ type Contact struct {
 	ProjectID uint
 }
 
-func parseDomainContact(c contacts.Contact) *Contact {
-	return &Contact{
-		FirstName: c.FirstName,
-		LastName:  c.LastName,
-		Phone:     c.Phone,
-		Comments:  c.Comments,
-	}
-}
-
-func parseDBContact(dbc Contact) *contacts.Contact {
-	return &contacts.Contact{
-		ID:        contacts.ContactID(dbc.ID),
-		FirstName: dbc.FirstName,
-		LastName:  dbc.LastName,
-		Phone:     dbc.Phone,
-		Comments:  dbc.Comments,
-	}
-}
-
 func (sql *SQLStorage) AddContact(c contacts.Contact) error {
 	Contact := parseDomainContact(c)
 	result := sql.db.Create(Contact)
