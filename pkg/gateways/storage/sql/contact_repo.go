@@ -19,8 +19,8 @@ type Contact struct {
 }
 
 func (sql *SQLStorage) AddContact(c contacts.Contact) error {
-	Contact := parseDomainContact(c)
-	result := sql.db.Create(Contact)
+	contact := parseDomainContact(c)
+	result := sql.db.Create(contact)
 	if result.Error != nil {
 		return result.Error
 	}

@@ -2,7 +2,6 @@ package sql
 
 import (
 	"codelamp-ims/pkg/domain/clients"
-	"codelamp-ims/pkg/domain/contacts"
 	"time"
 
 	"gorm.io/gorm"
@@ -13,14 +12,15 @@ type ClientType string
 type ClientState string
 
 type Client struct {
+	gorm.Model
 	Name          string
-	AdmissionDate time.Time
 	FinishDate    time.Time
+	AdmissionDate time.Time
 	Website       string
 	Country       string
 	Tag           string
-	contacts      []contacts.ContactID
-	projects      []Project
+	//Contacts      []contacts.ContactID
+	Projects []Project
 }
 
 type ProjectID int
@@ -41,7 +41,13 @@ type Project struct {
 }
 
 func (sql *SQLStorage) AddClient(c clients.Client) (*clients.ClientID, error) {
-	panic("not implemented") // TODO: Implement
+	client := parseDomainClient(c)
+	result := sql.db.Create(client)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	id := clients.ClientID(client.ID)
+	return &id, nil
 }
 
 func (sql *SQLStorage) ListClients() ([]clients.Client, error) {

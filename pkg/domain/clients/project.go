@@ -20,7 +20,8 @@ type Project struct {
 	Type          ProjectType
 	State         ProjectState
 	Tag           string
-	Contacts      []contacts.ContactID
+
+	Contacts []contacts.ContactID
 }
 
 func (p *Project) ValidateName() error {

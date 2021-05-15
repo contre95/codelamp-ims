@@ -48,7 +48,7 @@ func (s *service) Create(client Client) (*ClientID, error) {
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("Could not create client %s", client.Name))
 	}
-	errp := s.AttachProjects(*cid, client.projects)
+	errp := s.AttachProjects(*cid, client.Projects)
 	if errp != nil {
 		return nil, errors.New(fmt.Sprintf("Could not add projects to client %s", client.Name))
 	}

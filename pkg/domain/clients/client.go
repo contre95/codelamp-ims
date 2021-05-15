@@ -13,13 +13,13 @@ type ClientState string
 type Client struct {
 	ID            ClientID
 	Name          string
-	AdmissionDate time.Time
 	FinishDate    time.Time
+	AdmissionDate time.Time
 	Website       string
 	Country       string
 	Tag           string
-	contacts      []contacts.ContactID
-	projects      []Project
+	Contacts      []contacts.ContactID
+	Projects      []Project
 }
 
 func (c *Client) ValidateName() error {
