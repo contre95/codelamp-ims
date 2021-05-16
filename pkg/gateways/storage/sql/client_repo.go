@@ -39,6 +39,7 @@ type Project struct {
 	Type          string
 	State         string
 	Tag           string
+	ClientID      uint
 	Contacts      []Contact
 }
 
@@ -103,7 +104,7 @@ func (sql *SQLStorage) UpdateClientDetails(c clients.Client) error {
 
 func (sql *SQLStorage) AddProject(cid clients.ClientID, p clients.Project) (*clients.ProjectID, error) {
 	var dbClient Client
-	result := sql.db.First(dbClient, cid)
+	result := sql.db.First(&dbClient, cid)
 	if result.Error != nil {
 		return nil, errors.New(fmt.Sprintf("Could noot retrieve client for update: %s \n", result.Error))
 	}

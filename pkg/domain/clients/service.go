@@ -22,7 +22,7 @@ type Repo interface {
 type Service interface {
 	Create(client Client) (*ClientID, error)
 	Delete(id ClientID) (*Client, error)
-	UpdateInfo(client Client) error
+	UpdateDetails(client Client) error
 	Get(cid ClientID) (*Client, error)
 	List() ([]Client, error)
 
@@ -75,7 +75,7 @@ func (s *service) Delete(cid ClientID) (*Client, error) {
 	return c, nil
 }
 
-func (s *service) UpdateInfo(client Client) error {
+func (s *service) UpdateDetails(client Client) error {
 	err := s.repo.UpdateClientDetails(client)
 	if err != nil {
 		return errors.New("Could not update client information.")
