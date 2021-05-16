@@ -5,6 +5,13 @@ import (
 	"codelamp-ims/pkg/domain/contacts"
 )
 
+func parseDBProjects(dbps []Project) []clients.Project {
+	var projects []clients.Project
+	for _, dbp := range dbps {
+		projects = append(projects, *parseDBProject(dbp))
+	}
+	return projects
+}
 func parseDBProject(dbp Project) *clients.Project {
 	var contactsIDs []contacts.ContactID
 	for _, cid := range dbp.Contacts {
@@ -40,6 +47,14 @@ func parseDomainClient(c clients.Client) *Client {
 		Projects:      dbProjects,
 		//Contacts:      c.Contacts,     // Am I getting contacts here ? No I'm not
 	}
+}
+
+func parseDBClients(dbcs []Client) []clients.Client {
+	var clients []clients.Client
+	for _, dbc := range dbcs {
+		clients = append(clients, *parseDBClient(dbc))
+	}
+	return clients
 }
 
 func parseDBClient(dbc Client) *clients.Client {

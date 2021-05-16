@@ -33,11 +33,7 @@ func (sql *SQLStorage) ListContacts() ([]contacts.Contact, error) {
 	if result.Error != nil {
 		return nil, errors.New(fmt.Sprintf("Could not fetch contacts: %s \n", result.Error))
 	}
-	var domainContacts []contacts.Contact
-	for _, dbContact := range dbContacts {
-		domainContacts = append(domainContacts, *parseDBContact(dbContact))
-	}
-	return domainContacts, nil
+	return parseDBContacts(dbContacts), nil
 }
 
 func (sql *SQLStorage) GetContact(id contacts.ContactID) (*contacts.Contact, error) {
@@ -62,7 +58,7 @@ func (sql *SQLStorage) UpdateContact(c contacts.Contact) error {
 	dbContact.UpdatedAt = time.Now()
 	err := sql.db.Save(dbContact)
 	if err != nil {
-		return errors.New(fmt.Sprintf("Could not update contact (%s): %s \n", c.FirstName, result.Error))
+		return errors.New(fmt.Sprintf("Could not update contact (%s): %v \n", c.FirstName, err))
 	}
 	return nil
 }

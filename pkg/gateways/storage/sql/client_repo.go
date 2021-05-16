@@ -2,6 +2,8 @@ package sql
 
 import (
 	"codelamp-ims/pkg/domain/clients"
+	"errors"
+	"fmt"
 	"time"
 
 	"gorm.io/gorm"
@@ -46,42 +48,130 @@ func (sql *SQLStorage) AddClient(c clients.Client) (*clients.ClientID, error) {
 	if result.Error != nil {
 		return nil, result.Error
 	}
-	id := clients.ClientID(client.ID)
-	return &id, nil
+	return &client.ID, nil
 }
 
 func (sql *SQLStorage) ListClients() ([]clients.Client, error) {
-	panic("not implemented") // TODO: Implement
+	var clients []Client
+	result := sql.db.Find(&clients)
+	if result.Error != nil {
+		return nil, errors.New(fmt.Sprintf("Could not fetch contacts: %s \n", result.Error))
+	}
+	return parseDBClients(clients), nil
 }
 
 func (sql *SQLStorage) GetClient(id clients.ClientID) (*clients.Client, error) {
-	panic("not implemented") // TODO: Implement
-}
-
-func (sql *SQLStorage) UpdateClient(c clients.Client) error {
-	panic("not implemented") // TODO: Implement
+	var dbClient Client
+	result := sql.db.First(&dbClient, id)
+	if result.Error != nil {
+		return nil, errors.New(fmt.Sprintf("Could not retrieve clients: %s \n", result.Error))
+	}
+	return parseDBClient(dbClient), nil
 }
 
 func (sql *SQLStorage) DeleteClient(id clients.ClientID) (*clients.Client, error) {
-	panic("not implemented") // TODO: Implement
+	var dbClient Client
+	result_get := sql.db.First(&dbClient, id)
+	if result_get.Error != nil {
+		return nil, errors.New(fmt.Sprintf("Could not retrieve client: %s \n", result_get.Error))
+	}
+	result_delete := sql.db.Delete(&Client{}, id)
+	if result_delete.Error != nil {
+		return nil, errors.New(fmt.Sprintf("Could not delete client: %s \n", result_get.Error))
+	}
+	return parseDBClient(dbClient), nil
+}
+
+func (sql *SQLStorage) UpdateClientDetails(c clients.Client) error {
+	var dbClient Client
+	result := sql.db.First(dbClient, c.ID)
+	if result.Error != nil {
+		return errors.New(fmt.Sprintf("Could not update client (client %s not found): %s \n)", c.Name, result.Error))
+	}
+	dbClient.Name = c.Name
+	dbClient.FinishDate = c.FinishDate
+	dbClient.AdmissionDate = c.AdmissionDate
+	dbClient.Website = c.Website
+	dbClient.Country = c.Country
+	dbClient.Tag = c.Tag
+	err := sql.db.Save(dbClient)
+	if err != nil {
+		return errors.New(fmt.Sprintf("Coudl not update client (%s): %v \n", c.Name, err))
+	}
+	return nil
 }
 
 func (sql *SQLStorage) AddProject(cid clients.ClientID, p clients.Project) (*clients.ProjectID, error) {
-	panic("not implemented") // TODO: Implement
+	var dbClient Client
+	result := sql.db.First(dbClient, cid)
+	if result.Error != nil {
+		return nil, errors.New(fmt.Sprintf("Could noot retrieve client for update: %s \n", result.Error))
+	}
+	// Create project
+	project := parseDomainProject(p)
+	result_project := sql.db.Create(&project)
+	if result_project != nil {
+		return nil, errors.New(fmt.Sprintf("Could not add project, to "))
+	}
+	// end Create project
+	dbClient.Projects = append(dbClient.Projects, *project)
+	err := sql.db.Save(dbClient)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("Coudl not update client (%s): %v \n", dbClient.Name, err))
+	}
+	return &project.ID, nil
 }
 
 func (sql *SQLStorage) GetProjects(cid clients.ClientID) ([]clients.Project, error) {
-	panic("not implemented") // TODO: Implement
+	var dbClient Client
+	result := sql.db.First(dbClient, cid)
+	if result.Error != nil {
+		return nil, errors.New(fmt.Sprintf("Coudl not get client's projects (%s)\n", dbClient.Name))
+	}
+	return parseDBProjects(dbClient.Projects), nil
 }
 
 func (sql *SQLStorage) GetProject(cid clients.ClientID, pid clients.ProjectID) (*clients.Project, error) {
-	panic("not implemented") // TODO: Implement
+	var dbProjects Project
+	result := sql.db.First(dbProjects, pid)
+	if result.Error != nil {
+		return nil, errors.New(fmt.Sprintf("Could not retrieve project: %s \n", result.Error))
+	}
+	return parseDBProject(dbProjects), nil
 }
 
 func (sql *SQLStorage) UpdateProjct(p clients.Project) error {
-	panic("not implemented") // TODO: Implement
+	var dbProject Project
+	result := sql.db.First(dbProject, p.ID)
+	if result.Error != nil {
+		return errors.New(fmt.Sprintf("Could not update client (client %s not found): %s \n)", p.Name, result.Error))
+	}
+	dbProject.Name = p.Name
+	dbProject.StartDate = p.StartDate
+	dbProject.FinishDate = p.FinishDate
+	dbProject.Website = p.Website
+	dbProject.GitRepository = p.GitRepository
+	dbProject.Type = string(p.Type)
+	dbProject.State = string(p.State)
+	dbProject.Tag = p.Tag
+
+	err := sql.db.Save(dbProject)
+	if err != nil {
+		return errors.New(fmt.Sprintf("Coudl not update client (%s): %v \n", p.Name, err))
+	}
+	return nil
 }
 
 func (sql *SQLStorage) DeleteProject(pid clients.ProjectID) (*clients.Project, error) {
-	panic("not implemented") // TODO: Implement
+	var dbProject Project
+	result_get := sql.db.First(&dbProject, pid)
+	if result_get.Error != nil {
+		return nil, errors.New(fmt.Sprintf("Could not retrieve project: %s \n", result_get.Error))
+	}
+	result_delete := sql.db.Delete(&Project{}, pid)
+	if result_delete.Error != nil {
+		return nil, errors.New(fmt.Sprintf("Could not delete project: %s \n", result_delete.Error))
+	}
+	return parseDBProject(dbProject), nil
+
 }

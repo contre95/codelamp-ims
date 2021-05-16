@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type ProjectID uint
+type ProjectID = uint
 type ProjectType string
 type ProjectState string
 
