@@ -12,9 +12,11 @@ import (
 )
 
 func main() {
+	fmt.Println("Hi")
 	db, _ := gorm.Open(sqlite.Open("ims.db"), &gorm.Config{})
 	sqlStorage := sql.NewStorage(db)
 	sqlStorage.Migrate()
+	fmt.Println("Database migrated")
 
 	contactService := contacts.NewService(sqlStorage)
 	clientsService := clients.NewService(sqlStorage)
