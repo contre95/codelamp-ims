@@ -13,7 +13,7 @@ import (
 
 func main() {
 	fmt.Println("Hi")
-	db, _ := gorm.Open(sqlite.Open("ims.db"), &gorm.Config{})
+	db, _ := gorm.Open(sqlite.Open("db/ims.db"), &gorm.Config{})
 	sqlStorage := sql.NewStorage(db)
 	sqlStorage.Migrate()
 	fmt.Println("Database migrated")
