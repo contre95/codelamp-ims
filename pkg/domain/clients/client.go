@@ -2,7 +2,7 @@ package clients
 
 import (
 	"codelamp-ims/pkg/domain/contacts"
-	"errors"
+	"fmt"
 	"regexp"
 	"time"
 
@@ -15,19 +15,24 @@ type ClientState string
 
 type Client struct {
 	ID            ClientID
-	Name          string
-	FinishDate    time.Time
-	AdmissionDate time.Time
-	Website       string
-	Country       string
-	Tag           string
+	Name          string    `validate:"required,min=3,max=32"`
+	AdmissionDate time.Time `validate:"ltcsfield=InnerStructField.FinishDate"`
+	FinishDate    time.Time `validate:"gtcsfield=InnerStructField.AdmissionDate"`
+	Website       string    `validate:"url"`
+	Country       string    `validate:"required,min=3,max=32"`
+	Tag           string    `validate:"kebabCase,startswith=sys-|web-|imp-"`
 	Contacts      []contacts.ContactID
 	Projects      []Project
 }
 
-func (c *Client) ValidateName() error {
-	if len(c.Name) > 1 {
-		return errors.New("Name too short")
+func (c *Client) Validate() error {
+	validate := validator.New()
+	err := validate.Struct(c)
+	if err != nil {
+		if _, ok := err.(*validator.InvalidValidationError); ok {
+			fmt.Println(err)
+		}
+		return err
 	}
 	return nil
 }
