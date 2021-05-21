@@ -2,6 +2,9 @@ package http
 
 import (
 	"codelamp-ims/pkg/domain/clients"
+	"errors"
+	"net/http"
+	"time"
 
 	fiber "github.com/gofiber/fiber/v2"
 )
@@ -18,9 +21,67 @@ type Client struct {
 	//Projects      []Project
 }
 
-func createClient(s *clients.Service) func(*fiber.Ctx) error {
-	return func(c *fiber.Ctx) error {
+type Project struct {
+	//ID            string `json:"id"`
+	Name          string `json:"name"`
+	StartDate     string `json:"start_date"`
+	FinishDate    string `json:"finish_date"`
+	Website       string `json:"website"`
+	GitRepository string `json:"git_repository"`
+	Type          string `json:"type"`
+	State         string `json:"state"`
+	Tag           string `json:"tag"`
+	//Contacts []contacts.ContactID `json:"contacts"`
+}
 
-		return c.SendString("pong")
+func parseJSONClient(jc Client) (*clients.Client, error) {
+	var err error
+	var admissionDate, finishDate time.Time
+	admissionDate, err = time.Parse(time.RFC3339, jc.AdmissionDate)
+	finishDate, err = time.Parse(time.RFC3339, jc.FinishDate)
+	if err != nil {
+		return nil, errors.New("Invalid Data")
+	}
+
+	client := &clients.Client{
+		Name:          jc.Name,
+		AdmissionDate: admissionDate,
+		FinishDate:    finishDate,
+		Website:       jc.Website,
+		Country:       jc.Country,
+		Tag:           jc.Tag,
+	}
+
+	err = client.Validate()
+	if err != nil {
+		return nil, errors.New("Invalid client")
+	}
+	return client, nil
+}
+
+func parseDomainClient(dc clients.Client) *Client {
+	panic("Implement me")
+}
+
+func parseDomainProject(dp Project) *clients.Project {
+	panic("Implement me")
+}
+
+func parseJSONProject(jp clients.Project) *Project {
+	panic("Implement me")
+}
+
+func createClient(s clients.Service) func(*fiber.Ctx) error {
+	return func(c *fiber.Ctx) error {
+		newClientData := Client{}
+		if err := c.BodyParser(&newClientData); err != nil {
+			newClient, err := parseJSONClient(newClientData)
+			if err != nil {
+				return c.SendStatus(http.StatusNotAcceptable)
+			}
+			s.Create(*newClient)
+			return c.SendStatus(http.StatusNotAcceptable)
+		}
+		return c.SendStatus(http.StatusAccepted)
 	}
 }
