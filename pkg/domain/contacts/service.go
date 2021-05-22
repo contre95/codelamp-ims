@@ -5,6 +5,13 @@ import (
 	"fmt"
 )
 
+type Logger interface {
+	Info(format string, i ...interface{})
+	Warn(format string, i ...interface{})
+	Err(format string, i ...interface{})
+	Debug(format string, i ...interface{})
+}
+
 type Repo interface {
 	AddContact(c Contact) error
 	ListContacts() ([]Contact, error)
@@ -19,11 +26,12 @@ type Service interface {
 }
 
 type service struct {
-	repo Repo
+	logger Logger
+	repo   Repo
 }
 
-func NewService(repo Repo) Service {
-	return &service{repo}
+func NewService(logger Logger, repo Repo) Service {
+	return &service{logger, repo}
 }
 
 func (s *service) Create(c Contact) error {

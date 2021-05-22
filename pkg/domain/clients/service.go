@@ -5,6 +5,13 @@ import (
 	"fmt"
 )
 
+type Logger interface {
+	Info(format string, i ...interface{})
+	Warn(format string, i ...interface{})
+	Err(format string, i ...interface{})
+	Debug(format string, i ...interface{})
+}
+
 type Repo interface {
 	AddClient(c Client) (*ClientID, error)
 	ListClients() ([]Client, error)
@@ -36,20 +43,22 @@ type Service interface {
 }
 
 type service struct {
-	repo Repo
+	logger Logger
+	repo   Repo
 }
 
-func NewService(repo Repo) Service {
-	return &service{repo}
+func NewService(logger Logger, repo Repo) Service {
+	return &service{logger, repo}
 }
 
 func (s *service) Create(client Client) (*ClientID, error) {
+	s.logger.Info("Creating client" + client.Name)
 	cid, err := s.repo.AddClient(client)
 	if err != nil {
+		s.logger.Err("Error creating client", err)
 		return nil, errors.New(fmt.Sprintf("Could not create client %s", client.Name))
 	}
 	// There's really no need to attach project AddClient does it by its own
-
 	//errp := s.AttachProjects(*cid, client.Projects)
 	//if errp != nil {
 	//return nil, errors.New(fmt.Sprintf("Could not add projects to client %s", client.Name))
@@ -60,6 +69,7 @@ func (s *service) Create(client Client) (*ClientID, error) {
 func (s *service) Get(cid ClientID) (*Client, error) {
 	c, err := s.repo.GetClient(cid)
 	if err != nil {
+		s.logger.Err("Error fetching client", err)
 		return nil, errors.New("Could not get requested client")
 	}
 	return c, nil
@@ -72,6 +82,7 @@ func (s *service) Delete(cid ClientID) (*Client, error) {
 	}
 	c, err := s.repo.DeleteClient(cid)
 	if err != nil {
+		s.logger.Err("Error deleting client", err)
 		return nil, errors.New("Could not delete client")
 	}
 	return c, nil
@@ -80,6 +91,7 @@ func (s *service) Delete(cid ClientID) (*Client, error) {
 func (s *service) UpdateDetails(client Client) error {
 	err := s.repo.UpdateClientDetails(client)
 	if err != nil {
+		s.logger.Err("Error updating client", err)
 		return errors.New("Could not update client information.")
 	}
 	// TODO: No sé si está tan bueno updatear los projects | hacer un diff con los nuevos/existentes | borrar todos y agregar los nuevos
@@ -93,6 +105,7 @@ func (s *service) UpdateDetails(client Client) error {
 func (s *service) List( /*itermPerPage, page, int*/ ) ([]Client, error) {
 	clients, err := s.repo.ListClients()
 	if err != nil {
+		s.logger.Err("Error getting clients", err)
 		return nil, errors.New(fmt.Sprintf("could not get clients: %s", err))
 	}
 	return clients, nil
@@ -102,6 +115,7 @@ func (s *service) AttachProjects(cid ClientID, projects []Project) error {
 	for _, p := range projects {
 		_, err := s.CreateProject(cid, p)
 		if err != nil {
+			s.logger.Err("Error attaching projects to client", err)
 			return err
 		}
 	}
@@ -111,6 +125,7 @@ func (s *service) AttachProjects(cid ClientID, projects []Project) error {
 func (s *service) CreateProject(cid ClientID, p Project) (*ProjectID, error) {
 	pid, err := s.repo.AddProject(cid, p)
 	if err != nil {
+		s.logger.Err("Error creating project", err)
 		return nil, errors.New(fmt.Sprintf("Could not create project %s", p.Name))
 	}
 	return pid, nil
@@ -119,6 +134,7 @@ func (s *service) CreateProject(cid ClientID, p Project) (*ProjectID, error) {
 func (s *service) GetProjects(cid ClientID) ([]Project, error) {
 	projects, err := s.repo.GetProjects(cid)
 	if err != nil {
+		s.logger.Err("Error fetching project", err)
 		return nil, errors.New("Could not get projects from client.")
 	}
 	return projects, nil
@@ -127,6 +143,7 @@ func (s *service) GetProjects(cid ClientID) ([]Project, error) {
 func (s *service) GetProject(cid ClientID, pid ProjectID) (*Project, error) {
 	p, err := s.repo.GetProject(cid, pid)
 	if err != nil {
+		s.logger.Err("Error getting projects", err)
 		return nil, errors.New("Could not get projects from client.")
 	}
 	return p, nil
@@ -135,6 +152,7 @@ func (s *service) GetProject(cid ClientID, pid ProjectID) (*Project, error) {
 func (s *service) UpdateProject(cid ClientID, p Project) error {
 	err := s.repo.UpdateProjct(p)
 	if err != nil {
+		s.logger.Err("Error updating projects ", err)
 		return errors.New("Could not update project")
 	}
 	return nil
@@ -142,10 +160,10 @@ func (s *service) UpdateProject(cid ClientID, p Project) error {
 func (s *service) RemoveProject( /*cid ClientID,*/ pid ProjectID) (*Project, error) {
 	p, err := s.repo.DeleteProject(pid)
 	if err != nil {
+		s.logger.Err("Error removing project", err)
 		return nil, errors.New("Could not delete project.")
 	}
 	return p, nil
-
 }
 
 func (s *service) RemoveProjects(cid ClientID) ([]Project, error) {
@@ -156,6 +174,7 @@ func (s *service) RemoveProjects(cid ClientID) ([]Project, error) {
 	for _, p := range projects {
 		_, err := s.RemoveProject(p.ID)
 		if err != nil {
+			s.logger.Err("Error removing projects", err)
 			return nil, errors.New(fmt.Sprintf("Could not remove project %s", p.Name))
 		}
 	}

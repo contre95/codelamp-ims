@@ -4,6 +4,7 @@ import (
 	"codelamp-ims/pkg/domain/clients"
 	"codelamp-ims/pkg/domain/contacts"
 	"codelamp-ims/pkg/domain/health"
+	"codelamp-ims/pkg/gateways/logger"
 	"codelamp-ims/pkg/gateways/storage/sql"
 	"codelamp-ims/pkg/presenters/http"
 
@@ -12,22 +13,20 @@ import (
 	"gorm.io/gorm"
 )
 
-type Product struct {
-	gorm.Model
-	Code  string
-	Price uint
-}
-
 func main() {
 	db, _ := gorm.Open(sqlite.Open("ims.db"), &gorm.Config{})
 	storageService := sql.NewStorage(db)
 	storageService.Migrate()
 
-	contactService := contacts.NewService(storageService)
-	clientsService := clients.NewService(storageService)
-	healthService := health.NewService()
+	healthLogger := logger.NewSTDLogger("HEALTH")
+
+	serviceLogger := logger.NewSTDLogger("DOMAIN")
+
+	contactService := contacts.NewService(serviceLogger, storageService)
+	clientsService := clients.NewService(serviceLogger, storageService)
+	healthService := health.NewService(healthLogger)
+
 	fiberApp := fiber.New()
 	http.MapRoutes(fiberApp, &clientsService, &contactService, &healthService)
 	fiberApp.Listen(":3000")
-	return
 }

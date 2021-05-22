@@ -2,86 +2,45 @@ package http
 
 import (
 	"codelamp-ims/pkg/domain/clients"
-	"errors"
+	"fmt"
 	"net/http"
-	"time"
 
 	fiber "github.com/gofiber/fiber/v2"
 )
 
-type Client struct {
-	//ID   string
-	Name          string `json:"name"`
-	AdmissionDate string `json:"admission_date"`
-	FinishDate    string `json:"finish_date"`
-	Country       string `json:"country"`
-	Website       string `json:"website"`
-	Tag           string `json:"tag"`
-	Contacts      []uint `json:"contacts"`
-	//Projects      []Project
-}
-
-type Project struct {
-	//ID            string `json:"id"`
-	Name          string `json:"name"`
-	StartDate     string `json:"start_date"`
-	FinishDate    string `json:"finish_date"`
-	Website       string `json:"website"`
-	GitRepository string `json:"git_repository"`
-	Type          string `json:"type"`
-	State         string `json:"state"`
-	Tag           string `json:"tag"`
-	//Contacts []contacts.ContactID `json:"contacts"`
-}
-
-func parseJSONClient(jc Client) (*clients.Client, error) {
-	var err error
-	var admissionDate, finishDate time.Time
-	admissionDate, err = time.Parse(time.RFC3339, jc.AdmissionDate)
-	finishDate, err = time.Parse(time.RFC3339, jc.FinishDate)
-	if err != nil {
-		return nil, errors.New("Invalid Data")
-	}
-
-	client := &clients.Client{
-		Name:          jc.Name,
-		AdmissionDate: admissionDate,
-		FinishDate:    finishDate,
-		Website:       jc.Website,
-		Country:       jc.Country,
-		Tag:           jc.Tag,
-	}
-
-	err = client.Validate()
-	if err != nil {
-		return nil, errors.New("Invalid client")
-	}
-	return client, nil
-}
-
-func parseDomainClient(dc clients.Client) *Client {
-	panic("Implement me")
-}
-
-func parseDomainProject(dp Project) *clients.Project {
-	panic("Implement me")
-}
-
-func parseJSONProject(jp clients.Project) *Project {
-	panic("Implement me")
-}
-
 func createClient(s clients.Service) func(*fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 		newClientData := Client{}
-		if err := c.BodyParser(&newClientData); err != nil {
-			newClient, err := parseJSONClient(newClientData)
-			if err != nil {
-				return c.SendStatus(http.StatusNotAcceptable)
-			}
-			s.Create(*newClient)
-			return c.SendStatus(http.StatusNotAcceptable)
+		err := c.BodyParser(&newClientData)
+		if err != nil {
+			fmt.Println(err)
+			c.Status(http.StatusNotAcceptable)
+			return c.JSON(err)
 		}
-		return c.SendStatus(http.StatusAccepted)
+		newClient, err := parseJSONClient(newClientData)
+		if err != nil {
+			fmt.Println(err)
+			c.Status(http.StatusNotAcceptable)
+			return c.JSON(err)
+		}
+		id, err := s.Create(*newClient)
+		if err != nil {
+			fmt.Println(err)
+			return c.SendStatus(http.StatusInternalServerError)
+		}
+		fmt.Println(err)
+		c.Status(http.StatusAccepted)
+		return c.JSON(id)
+	}
+}
+
+func getClients(s clients.Service) func(*fiber.Ctx) error {
+	return func(c *fiber.Ctx) error {
+		panic("Implement me")
+	}
+}
+func sampleHanlder(s clients.Service) func(*fiber.Ctx) error {
+	return func(c *fiber.Ctx) error {
+		return nil
 	}
 }

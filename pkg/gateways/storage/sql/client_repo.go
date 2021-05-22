@@ -15,7 +15,7 @@ type ClientState string
 
 type Client struct {
 	gorm.Model
-	Name          string
+	Name          string `gorm:"unique"`
 	FinishDate    time.Time
 	AdmissionDate time.Time
 	Website       string
@@ -31,7 +31,7 @@ type ProjectState string
 
 type Project struct {
 	gorm.Model
-	Name          string
+	Name          string `gorm:"unique"`
 	StartDate     time.Time
 	FinishDate    time.Time
 	Website       string

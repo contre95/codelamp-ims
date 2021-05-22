@@ -13,7 +13,7 @@ var SampleClients = []clients.Client{
 		AdmissionDate: time.Now(),
 		Website:       "https://transporterugiero.com/",
 		Country:       "Argentina",
-		Tag:           "trasporte-rugiero",
+		Tag:           "transporte-rugiero",
 		Projects: []clients.Project{
 			{
 				Name:       "Rugiero Sistema de Gestión",
