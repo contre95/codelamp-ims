@@ -52,10 +52,10 @@ func NewService(logger Logger, repo Repo) Service {
 }
 
 func (s *service) Create(client Client) (*ClientID, error) {
-	s.logger.Info("Creating client" + client.Name)
+	s.logger.Info("Creating client: %s ", client.Name)
 	cid, err := s.repo.AddClient(client)
 	if err != nil {
-		s.logger.Err("Error creating client", err)
+		s.logger.Err("Error creating client: %v", err)
 		return nil, errors.New(fmt.Sprintf("Could not create client %s", client.Name))
 	}
 	// There's really no need to attach project AddClient does it by its own

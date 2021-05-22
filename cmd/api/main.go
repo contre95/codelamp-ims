@@ -14,16 +14,16 @@ import (
 )
 
 func main() {
-	db, _ := gorm.Open(sqlite.Open("ims.db"), &gorm.Config{})
+	db, _ := gorm.Open(sqlite.Open("db/ims.db"), &gorm.Config{})
 	storageService := sql.NewStorage(db)
 	storageService.Migrate()
 
-	healthLogger := logger.NewSTDLogger("HEALTH")
+	contactLogger := logger.NewSTDLogger("CONTACT", logger.BEIGE)
+	clientLogger := logger.NewSTDLogger("CLIENTS", logger.VIOLET)
+	healthLogger := logger.NewSTDLogger("HEALTH", logger.GREEN2)
 
-	serviceLogger := logger.NewSTDLogger("DOMAIN")
-
-	contactService := contacts.NewService(serviceLogger, storageService)
-	clientsService := clients.NewService(serviceLogger, storageService)
+	contactService := contacts.NewService(contactLogger, storageService)
+	clientsService := clients.NewService(clientLogger, storageService)
 	healthService := health.NewService(healthLogger)
 
 	fiberApp := fiber.New()

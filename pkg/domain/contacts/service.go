@@ -35,8 +35,10 @@ func NewService(logger Logger, repo Repo) Service {
 }
 
 func (s *service) Create(c Contact) error {
+	s.logger.Info("Creating contact %s", c.FirstName+" "+c.LastName)
 	err := s.repo.AddContact(c)
 	if err != nil {
+		s.logger.Err("Error creating contact : %v", err)
 		return errors.New(fmt.Sprintf("could not create contact: %s", err))
 	}
 	return nil

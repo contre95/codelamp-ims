@@ -19,16 +19,13 @@ func createClient(s clients.Service) func(*fiber.Ctx) error {
 		}
 		newClient, err := parseJSONClient(newClientData)
 		if err != nil {
-			fmt.Println(err)
 			c.Status(http.StatusNotAcceptable)
 			return c.JSON(err)
 		}
 		id, err := s.Create(*newClient)
 		if err != nil {
-			fmt.Println(err)
 			return c.SendStatus(http.StatusInternalServerError)
 		}
-		fmt.Println(err)
 		c.Status(http.StatusAccepted)
 		return c.JSON(id)
 	}
