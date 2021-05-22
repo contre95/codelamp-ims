@@ -6,5 +6,5 @@ db_dir:
 	mkdir $$(pwd)/db
 samples: clean db_dir
 	go run cmd/sample-data/*.go
-run: db_dir
+run: clean db_dir
 	go run cmd/api/main.go

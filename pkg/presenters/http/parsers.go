@@ -2,8 +2,6 @@ package http
 
 import (
 	"codelamp-ims/pkg/domain/clients"
-	"errors"
-	"fmt"
 	"time"
 )
 
@@ -36,13 +34,12 @@ func parseJSONClient(jc Client) (*clients.Client, error) {
 	var err error
 	var admissionDate, finishDate time.Time
 	admissionDate, err = time.Parse(time.RFC3339, jc.AdmissionDate)
-	if jc.FinishDate != "" {
+	if jc.FinishDate != "" { // Mmm ...
 		finishDate, err = time.Parse(time.RFC3339, jc.FinishDate)
 	}
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("Invalid data: %v", err))
+		return nil, err
 	}
-
 	client := &clients.Client{
 		Name:          jc.Name,
 		AdmissionDate: admissionDate,
@@ -54,8 +51,7 @@ func parseJSONClient(jc Client) (*clients.Client, error) {
 
 	err = client.Validate()
 	if err != nil {
-		fmt.Println(err)
-		return nil, errors.New("Invalid client")
+		return nil, err
 	}
 	return client, nil
 }

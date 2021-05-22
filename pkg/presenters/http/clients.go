@@ -13,21 +13,33 @@ func createClient(s clients.Service) func(*fiber.Ctx) error {
 		newClientData := Client{}
 		err := c.BodyParser(&newClientData)
 		if err != nil {
-			fmt.Println(err)
-			c.Status(http.StatusNotAcceptable)
-			return c.JSON(err)
+			return c.Status(http.StatusBadRequest).JSON(&fiber.Map{
+				"success":   false,
+				"client_id": nil,
+				"err":       fmt.Sprintf("%v", err),
+			})
 		}
 		newClient, err := parseJSONClient(newClientData)
 		if err != nil {
-			c.Status(http.StatusNotAcceptable)
-			return c.JSON(err)
+			return c.Status(http.StatusBadRequest).JSON(&fiber.Map{
+				"success":   false,
+				"client_id": nil,
+				"err":       fmt.Sprintf("%v", err),
+			})
 		}
 		id, err := s.Create(*newClient)
 		if err != nil {
-			return c.SendStatus(http.StatusInternalServerError)
+			return c.Status(http.StatusInternalServerError).JSON(&fiber.Map{
+				"success":   false,
+				"client_id": nil,
+				"err":       fmt.Sprintf("%v", err),
+			})
 		}
-		c.Status(http.StatusAccepted)
-		return c.JSON(id)
+		return c.Status(http.StatusAccepted).JSON(&fiber.Map{
+			"success":   true,
+			"client_id": id,
+			"err":       nil,
+		})
 	}
 }
 

@@ -56,7 +56,7 @@ func (s *service) Create(client Client) (*ClientID, error) {
 	cid, err := s.repo.AddClient(client)
 	if err != nil {
 		s.logger.Err("Error creating client: %v", err)
-		return nil, errors.New(fmt.Sprintf("Could not create client %s", client.Name))
+		return nil, errors.New(fmt.Sprintf("%v", err))
 	}
 	// There's really no need to attach project AddClient does it by its own
 	//errp := s.AttachProjects(*cid, client.Projects)
