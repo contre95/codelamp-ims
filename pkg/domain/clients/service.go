@@ -55,6 +55,7 @@ func (s *service) Create(client Client) (*ClientID, error) {
 	s.logger.Info("Creating client: %s ", client.Name)
 	cid, err := s.repo.AddClient(client)
 	if err != nil {
+		// Handle different types of errors
 		s.logger.Err("Error creating client: %v", err)
 		return nil, errors.New(fmt.Sprintf("%v", err))
 	}
