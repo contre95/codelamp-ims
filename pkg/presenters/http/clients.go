@@ -19,7 +19,7 @@ func createClient(s clients.AddingService) func(*fiber.Ctx) error {
 				"err":       fmt.Sprintf("%v", err),
 			})
 		}
-		newClientRequest := &clients.AddClientRequest{
+		newClientRequest := &clients.AddRequest{
 			Name:          newClientData.Name,
 			AdmissionDate: newClientData.AdmissionDate,
 			FinishDate:    newClientData.FinishDate,
@@ -27,7 +27,7 @@ func createClient(s clients.AddingService) func(*fiber.Ctx) error {
 			Country:       newClientData.Country,
 			Tag:           newClientData.Tag,
 		}
-		id, err := s.Add(*newClientRequest)
+		addClientResponse, err := s.Add(*newClientRequest)
 		if err != nil {
 			return c.Status(http.StatusInternalServerError).JSON(&fiber.Map{
 				"success":   false,
@@ -37,7 +37,7 @@ func createClient(s clients.AddingService) func(*fiber.Ctx) error {
 		}
 		return c.Status(http.StatusAccepted).JSON(&fiber.Map{
 			"success":   true,
-			"client_id": id,
+			"client_id": addClientResponse.ID,
 			"err":       nil,
 		})
 	}

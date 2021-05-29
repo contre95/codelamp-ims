@@ -52,13 +52,15 @@ func (sql *SQLStorage) AddClient(c clients.Client) (*clients.ClientID, error) {
 	return &client.ID, nil
 }
 
-func (sql *SQLStorage) ListClients() ([]clients.Client, error) {
+func (sql *SQLStorage) ListClients(filter clients.Filter, pageSize, page uint) ([]clients.Client, total int64,  error) {
 	var clients []Client
-	result := sql.db.Find(&clients)
+	var count int64
+	sql.db.Model(&Client{}).Count(&count)
+	result := sql.db.Scopes(sql.paginate(pageSize, page)).Find(&clients)
 	if result.Error != nil {
-		return nil, errors.New(fmt.Sprintf("Could not fetch contacts: %s \n", result.Error))
+		return nil, nil, errors.New(fmt.Sprintf("Could not fetch contacts: %s \n", result.Error))
 	}
-	return parseDBClients(clients), nil
+	return parseDBClients(clients),count, nil
 }
 
 func (sql *SQLStorage) GetClient(id clients.ClientID) (*clients.Client, error) {

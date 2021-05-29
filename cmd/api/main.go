@@ -20,8 +20,10 @@ func main() {
 	clientLogger := logger.NewSTDLogger("CLIENTS", logger.VIOLET)
 	healthLogger := logger.NewSTDLogger("HEALTH", logger.GREEN2)
 
-	addClientSrv := clients.NewAddingService(clientLogger, storageService)
 	healthService := health.NewService(healthLogger)
+	addClientSrv := clients.NewAddService(clientLogger, storageService)
+	updateClientSrv := clients.NewUpdateService(clientLogger, storageService)
+	listClientSrv := clients.NewListService(clientLogger, storageService)
 
 	fiberApp := fiber.New()
 	http.MapRoutes(fiberApp, &healthService, &addClientSrv)
