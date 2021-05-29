@@ -6,11 +6,11 @@ import (
 	"time"
 )
 
-type AddClientResponse struct {
+type AddResponse struct {
 	ID ClientID
 }
 
-type AddClientRequest struct {
+type AddRequest struct {
 	Name          string
 	AdmissionDate string
 	FinishDate    string
@@ -19,26 +19,26 @@ type AddClientRequest struct {
 	Tag           string
 }
 
-type AddClientRepo interface {
+type AddRepo interface {
 	AddClient(c Client) (*ClientID, error)
 }
 
-type AddingService interface {
-	Add(req AddClientRequest) (*AddClientResponse, error)
+type AddService interface {
+	Add(req AddRequest) (*AddResponse, error)
 }
 
-type addingService struct {
+type addService struct {
 	logger Logger
-	repo   Repo
+	repo   AddRepo
 }
 
-func NewAddingService(logger Logger, repo Repo) AddingService {
-	return &service{logger, repo}
+func NewAddService(logger Logger, repo AddRepo) AddService {
+	return &addService{logger, repo}
 }
 
-func (s *service) Add(req AddClientRequest) (*AddClientResponse, error) {
+func (s *addService) Add(req AddRequest) (*AddResponse, error) {
 	s.logger.Info("Creating client: %s ", req.Name)
-	newClient, err := parseAddClientRequest(req)
+	newClient, err := parseAddRequest(req)
 	if err != nil {
 		return nil, errors.New("Client data is not valid")
 	}
@@ -47,10 +47,10 @@ func (s *service) Add(req AddClientRequest) (*AddClientResponse, error) {
 		s.logger.Err("Error creating client: %v", err)
 		return nil, errors.New(fmt.Sprintf("%v", err))
 	}
-	return &AddClientResponse{ID: *cid}, nil
+	return &AddResponse{ID: *cid}, nil
 }
 
-func parseAddClientRequest(req AddClientRequest) (*Client, error) {
+func parseAddRequest(req AddRequest) (*Client, error) {
 	var err error
 	var admissionDate, finishDate time.Time
 	admissionDate, err = time.Parse(time.RFC3339, req.AdmissionDate)
