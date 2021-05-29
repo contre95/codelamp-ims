@@ -8,7 +8,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 )
 
-func createClient(s clients.Service) func(*fiber.Ctx) error {
+func createClient(s clients.AddingService) func(*fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 		newClientData := Client{}
 		err := c.BodyParser(&newClientData)
@@ -19,15 +19,15 @@ func createClient(s clients.Service) func(*fiber.Ctx) error {
 				"err":       fmt.Sprintf("%v", err),
 			})
 		}
-		newClient, err := parseJSONClient(newClientData)
-		if err != nil {
-			return c.Status(http.StatusBadRequest).JSON(&fiber.Map{
-				"success":   false,
-				"client_id": nil,
-				"err":       fmt.Sprintf("%v", err),
-			})
+		newClientRequest := &clients.AddClientRequest{
+			Name:          newClientData.Name,
+			AdmissionDate: newClientData.AdmissionDate,
+			FinishDate:    newClientData.FinishDate,
+			Website:       newClientData.Website,
+			Country:       newClientData.Country,
+			Tag:           newClientData.Tag,
 		}
-		id, err := s.Create(*newClient)
+		id, err := s.Add(*newClientRequest)
 		if err != nil {
 			return c.Status(http.StatusInternalServerError).JSON(&fiber.Map{
 				"success":   false,
@@ -43,13 +43,8 @@ func createClient(s clients.Service) func(*fiber.Ctx) error {
 	}
 }
 
-func getClients(s clients.Service) func(*fiber.Ctx) error {
-	return func(c *fiber.Ctx) error {
-		panic("Implement me")
-	}
-}
-func sampleHanlder(s clients.Service) func(*fiber.Ctx) error {
-	return func(c *fiber.Ctx) error {
-		return nil
-	}
-}
+//func sampleHanlder(s clients.Service) func(*fiber.Ctx) error {
+//return func(c *fiber.Ctx) error {
+//return nil
+//}
+//}

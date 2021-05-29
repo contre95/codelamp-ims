@@ -2,7 +2,6 @@ package main
 
 import (
 	"codelamp-ims/pkg/domain/clients"
-	"codelamp-ims/pkg/domain/contacts"
 	"codelamp-ims/pkg/domain/health"
 	"codelamp-ims/pkg/gateways/logger"
 	"codelamp-ims/pkg/gateways/storage/sql"
@@ -18,15 +17,13 @@ func main() {
 	storageService := sql.NewStorage(db)
 	storageService.Migrate()
 
-	contactLogger := logger.NewSTDLogger("CONTACT", logger.BEIGE)
 	clientLogger := logger.NewSTDLogger("CLIENTS", logger.VIOLET)
 	healthLogger := logger.NewSTDLogger("HEALTH", logger.GREEN2)
 
-	contactService := contacts.NewService(contactLogger, storageService)
-	clientsService := clients.NewService(clientLogger, storageService)
+	addClientSrv := clients.NewAddingService(clientLogger, storageService)
 	healthService := health.NewService(healthLogger)
 
 	fiberApp := fiber.New()
-	http.MapRoutes(fiberApp, &clientsService, &contactService, &healthService)
+	http.MapRoutes(fiberApp, &healthService, &addClientSrv)
 	fiberApp.Listen(":3000")
 }
