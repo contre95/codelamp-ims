@@ -13,6 +13,7 @@ func MapRoutes(fi *fiber.App, he *health.Service, c *clients.Service) {
 	api := fi.Group("/api")    // /api
 	v1 := api.Group("/v1")     // /api/v1
 	v1.Post("/clients", createClient(*&c.AddUseCase))
+	v1.Get("/clients/:id", getClient(*&c.GetUseCase))
 }
 
 func ping(h health.Service) func(*fiber.Ctx) error {
