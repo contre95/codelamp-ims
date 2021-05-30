@@ -68,7 +68,7 @@ func (sql *SQLStorage) GetClient(id clients.ClientID) (*clients.Client, error) {
 	var dbClient Client
 	result := sql.db.Preload(clause.Associations).First(&dbClient, id)
 	if result.Error != nil {
-		return nil, errors.New(fmt.Sprintf("Could not retrieve clients: %s \n", result.Error))
+		return nil, result.Error
 	}
 	return parseDBClient(dbClient), nil
 }

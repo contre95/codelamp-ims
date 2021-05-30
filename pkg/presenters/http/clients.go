@@ -46,12 +46,12 @@ func createClient(s clients.AddUseCase) func(*fiber.Ctx) error {
 
 func getClient(s clients.GetUseCase) func(*fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
-		id, uriError := strconv.Atoi(c.Params("id"))
-		if uriError != nil {
+		id, err := strconv.Atoi(c.Params("id"))
+		if err != nil {
 			return c.Status(http.StatusBadRequest).JSON(&fiber.Map{
 				"success": false,
 				"client":  nil,
-				"err":     fmt.Sprintf("%v", uriError),
+				"err":     fmt.Sprintf("Wrong client ID"),
 			})
 		}
 		getRequest := &clients.GetRequest{ID: uint(id)}

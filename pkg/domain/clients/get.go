@@ -2,6 +2,7 @@ package clients
 
 import (
 	"errors"
+	"fmt"
 )
 
 type GetResponse struct {
@@ -32,8 +33,8 @@ func NewGetUseCase(logger Logger, repo GetRepo) GetUseCase {
 func (s *getUseCase) Get(req GetRequest) (*GetResponse, error) {
 	client, err := s.repo.GetClient(req.ID)
 	if err != nil {
-		s.logger.Err("Error updating client", err)
-		return nil, errors.New("Could not get client information.")
+		s.logger.Err("Error getting client with ID: %v", err)
+		return nil, errors.New(fmt.Sprint("Couldn't get client data: ", err))
 	}
 	resp := &GetResponse{*client}
 	return resp, nil
