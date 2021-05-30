@@ -72,6 +72,37 @@ func getClient(s clients.GetUseCase) func(*fiber.Ctx) error {
 	}
 }
 
+func listClients(s clients.ListUseCase) func(*fiber.Ctx) error {
+	return func(c *fiber.Ctx) error {
+		page, err1 := strconv.Atoi(c.Query("page", "0"))
+		pageSize, err2 := strconv.Atoi(c.Query("PageSize", "10"))
+		if err1 != nil || err2 != nil {
+			return c.Status(http.StatusBadRequest).JSON(&fiber.Map{
+				"success": false,
+				"clients": nil,
+				"err":     fmt.Sprintf("Wrong page input"),
+			})
+		}
+		listRequest := &clients.ListRequest{
+			Page:     uint(page),
+			PageSize: uint(pageSize),
+		}
+		resp, err := s.List(*listRequest)
+		if err != nil {
+			return c.Status(http.StatusInternalServerError).JSON(&fiber.Map{
+				"success": false,
+				"clients": nil,
+				"err":     fmt.Sprintf("%v", err),
+			})
+		}
+		return c.Status(http.StatusAccepted).JSON(&fiber.Map{
+			"success": true,
+			"clients": resp,
+			"err":     nil,
+		})
+	}
+}
+
 //func sampleHanlder(s clients.Service) func(*fiber.Ctx) error {
 //return func(c *fiber.Ctx) error {
 //return nil

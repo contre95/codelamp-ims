@@ -56,7 +56,8 @@ func (sql *SQLStorage) ListClients(filter clients.Filter, pageSize, page uint) (
 	var clients []Client
 	var count int64
 	sql.db.Model(&Client{}).Count(&count)
-	result := sql.db.Scopes(sql.paginate(pageSize, page)).Find(&clients)
+	//result := sql.db.Scopes(sql.paginate(pageSize, page)).Find(&clients)
+	result := sql.db.Scopes(sql.paginate(pageSize, page)).Table("clients")
 	if result.Error != nil {
 		return nil, nil, errors.New(fmt.Sprintf("Could not fetch contacts: %s \n", result.Error))
 	}

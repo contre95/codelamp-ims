@@ -5,5 +5,7 @@ invalid_client:
 	#curl -H "Content-Type: application/json" -X POST http://127.0.0.1:3000/api/v1/clients | jq
 get:
 	curl -H 'accept: application/dns-json' http://localhost:3000/api/v1/clients/1 | jq
+list:
+	curl -H 'accept: application/dns-json' http://localhost:3000/api/v1/clients | jq
 ping:
 	curl -H "Content-Type: application/json" -X GET http://127.0.0.1:3000/ping | jq

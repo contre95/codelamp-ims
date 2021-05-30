@@ -14,6 +14,7 @@ func MapRoutes(fi *fiber.App, he *health.Service, c *clients.Service) {
 	v1 := api.Group("/v1")     // /api/v1
 	v1.Post("/clients", createClient(*&c.AddUseCase))
 	v1.Get("/clients/:id", getClient(*&c.GetUseCase))
+	v1.Get("/clients", listClients(*&c.ListUseCase))
 }
 
 func ping(h health.Service) func(*fiber.Ctx) error {
