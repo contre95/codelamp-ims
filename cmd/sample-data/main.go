@@ -27,6 +27,7 @@ func main() {
 	for _, contact := range SampleContacts {
 		contactService.Create(contact)
 	}
+
 	for _, client := range SampleClients {
 		clientsService.Create(client)
 	}

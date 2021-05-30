@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type ClientID uint
@@ -56,8 +57,7 @@ func (sql *SQLStorage) ListClients(filter clients.Filter, pageSize, page uint) (
 	var clients []Client
 	var count int64
 	sql.db.Model(&Client{}).Count(&count)
-	//result := sql.db.Scopes(sql.paginate(pageSize, page)).Find(&clients)
-	result := sql.db.Scopes(sql.paginate(pageSize, page)).Table("clients")
+	result := sql.db.Scopes(sql.paginate(pageSize, page)).Find(&clients)
 	if result.Error != nil {
 		return nil, nil, errors.New(fmt.Sprintf("Could not fetch contacts: %s \n", result.Error))
 	}
@@ -66,7 +66,7 @@ func (sql *SQLStorage) ListClients(filter clients.Filter, pageSize, page uint) (
 
 func (sql *SQLStorage) GetClient(id clients.ClientID) (*clients.Client, error) {
 	var dbClient Client
-	result := sql.db.First(&dbClient, id)
+	result := sql.db.Preload(clause.Associations).First(&dbClient, id)
 	if result.Error != nil {
 		return nil, errors.New(fmt.Sprintf("Could not retrieve clients: %s \n", result.Error))
 	}

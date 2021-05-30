@@ -36,15 +36,19 @@ type ListUseCase interface {
 }
 
 type listUseCase struct {
-	logger Logger
-	repo   ListRepo
+	logger      Logger
+	repo        ListRepo
+	maxPageSize uint
 }
 
-func NewListUseCase(logger Logger, repo ListRepo) ListUseCase {
-	return &listUseCase{logger, repo}
+func NewListUseCase(logger Logger, repo ListRepo, maxPageSize uint) ListUseCase {
+	return &listUseCase{logger, repo, maxPageSize}
 }
 
 func (s *listUseCase) List(req ListRequest) (*ListResponse, error) {
+	if req.PageSize > s.maxPageSize {
+		req.PageSize = s.maxPageSize
+	}
 	clients, total, err := s.repo.ListClients(req.Filters, req.PageSize, req.Page)
 	if err != nil {
 		s.logger.Err("Error getting clients", err)

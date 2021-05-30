@@ -2,16 +2,10 @@ package clients
 
 import (
 	"errors"
-	"time"
 )
 
 type GetResponse struct {
-	Name          string
-	AdmissionDate time.Time
-	FinishDate    time.Time
-	Website       string
-	Country       string
-	Tag           string
+	Client Client
 }
 
 type GetRequest struct {
@@ -41,13 +35,6 @@ func (s *getUseCase) Get(req GetRequest) (*GetResponse, error) {
 		s.logger.Err("Error updating client", err)
 		return nil, errors.New("Could not get client information.")
 	}
-	resp := &GetResponse{
-		Name:          client.Name,
-		AdmissionDate: client.AdmissionDate,
-		FinishDate:    client.FinishDate,
-		Website:       client.Website,
-		Country:       client.Country,
-		Tag:           client.Tag,
-	}
+	resp := &GetResponse{*client}
 	return resp, nil
 }

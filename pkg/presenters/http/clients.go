@@ -75,7 +75,7 @@ func getClient(s clients.GetUseCase) func(*fiber.Ctx) error {
 func listClients(s clients.ListUseCase) func(*fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 		page, err1 := strconv.Atoi(c.Query("page", "0"))
-		pageSize, err2 := strconv.Atoi(c.Query("PageSize", "10"))
+		pageSize, err2 := strconv.Atoi(c.Query("pageSize", "10"))
 		if err1 != nil || err2 != nil {
 			return c.Status(http.StatusBadRequest).JSON(&fiber.Map{
 				"success": false,

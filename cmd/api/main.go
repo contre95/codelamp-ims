@@ -23,7 +23,7 @@ func main() {
 	healthService := health.NewService(healthLogger)
 
 	add := clients.NewAddUseCase(clientLogger, storage)
-	list := clients.NewListUseCase(clientLogger, storage)
+	list := clients.NewListUseCase(clientLogger, storage, 100)
 	get := clients.NewGetUseCase(clientLogger, storage)
 	update := clients.NewUpdateUseCase(clientLogger, storage)
 	del := clients.NewDeleteUseCase(clientLogger, storage)
