@@ -23,20 +23,20 @@ type AddRepo interface {
 	AddClient(c Client) (*ClientID, error)
 }
 
-type AddService interface {
+type AddUseCase interface {
 	Add(req AddRequest) (*AddResponse, error)
 }
 
-type addService struct {
+type addUseCase struct {
 	logger Logger
 	repo   AddRepo
 }
 
-func NewAddService(logger Logger, repo AddRepo) AddService {
-	return &addService{logger, repo}
+func NewAddUseCase(logger Logger, repo AddRepo) AddUseCase {
+	return &addUseCase{logger, repo}
 }
 
-func (s *addService) Add(req AddRequest) (*AddResponse, error) {
+func (s *addUseCase) Add(req AddRequest) (*AddResponse, error) {
 	s.logger.Info("Creating client: %s ", req.Name)
 	newClient, err := parseAddRequest(req)
 	if err != nil {

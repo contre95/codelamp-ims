@@ -21,8 +21,8 @@ type Client struct {
 	Website       string
 	Country       string
 	Tag           string
+	Projects      []Project
 	//Contacts      []contacts.ContactID
-	Projects []Project
 }
 
 type ProjectID int
@@ -52,7 +52,7 @@ func (sql *SQLStorage) AddClient(c clients.Client) (*clients.ClientID, error) {
 	return &client.ID, nil
 }
 
-func (sql *SQLStorage) ListClients(filter clients.Filter, pageSize, page uint) ([]clients.Client, total int64,  error) {
+func (sql *SQLStorage) ListClients(filter clients.Filter, pageSize, page uint) ([]clients.Client, *int64, error) {
 	var clients []Client
 	var count int64
 	sql.db.Model(&Client{}).Count(&count)
@@ -60,7 +60,7 @@ func (sql *SQLStorage) ListClients(filter clients.Filter, pageSize, page uint) (
 	if result.Error != nil {
 		return nil, nil, errors.New(fmt.Sprintf("Could not fetch contacts: %s \n", result.Error))
 	}
-	return parseDBClients(clients),count, nil
+	return parseDBClients(clients), &count, nil
 }
 
 func (sql *SQLStorage) GetClient(id clients.ClientID) (*clients.Client, error) {

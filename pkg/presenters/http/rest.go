@@ -8,11 +8,11 @@ import (
 )
 
 // MapRoutes is where http REST routes are mapped to functions
-func MapRoutes(fi *fiber.App, he *health.Service, ac *clients.AddingService) {
+func MapRoutes(fi *fiber.App, he *health.Service, c *clients.Service) {
 	fi.Get("/ping", ping(*he)) // /api/v1/ping
 	api := fi.Group("/api")    // /api
 	v1 := api.Group("/v1")     // /api/v1
-	v1.Post("/clients", createClient(*ac))
+	v1.Post("/clients", createClient(*&c.AddUseCase))
 }
 
 func ping(h health.Service) func(*fiber.Ctx) error {

@@ -22,20 +22,20 @@ type UpdateRepo interface {
 	UpdateClientDetails(c Client) error
 }
 
-type UpdateService interface {
-	UpdateDetailsService(req UpdateRequest) (*UpdateResponse, error)
+type UpdateUseCase interface {
+	UpdateDetailsUseCase(req UpdateRequest) (*UpdateResponse, error)
 }
 
-type updateService struct {
+type updateUseCase struct {
 	logger Logger
 	repo   UpdateRepo
 }
 
-func NewUpdateService(logger Logger, repo UpdateRepo) UpdateService {
-	return &updateService{logger, repo}
+func NewUpdateUseCase(logger Logger, repo UpdateRepo) UpdateUseCase {
+	return &updateUseCase{logger, repo}
 }
 
-func (s *updateService) UpdateDetailsService(req UpdateRequest) (*UpdateResponse, error) {
+func (s *updateUseCase) UpdateDetailsUseCase(req UpdateRequest) (*UpdateResponse, error) {
 	s.logger.Info("updating client: %s ", req.Name)
 	client, err := parseUpdateRequest(req)
 	if err != nil {

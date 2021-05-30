@@ -14,18 +14,23 @@ import (
 
 func main() {
 	db, _ := gorm.Open(sqlite.Open("db/ims.db"), &gorm.Config{})
-	storageService := sql.NewStorage(db)
-	storageService.Migrate()
+	storage := sql.NewStorage(db)
+	storage.Migrate()
 
 	clientLogger := logger.NewSTDLogger("CLIENTS", logger.VIOLET)
 	healthLogger := logger.NewSTDLogger("HEALTH", logger.GREEN2)
 
 	healthService := health.NewService(healthLogger)
-	addClientSrv := clients.NewAddService(clientLogger, storageService)
-	updateClientSrv := clients.NewUpdateService(clientLogger, storageService)
-	listClientSrv := clients.NewListService(clientLogger, storageService)
+
+	add := clients.NewAddUseCase(clientLogger, storage)
+	list := clients.NewListUseCase(clientLogger, storage)
+	get := clients.NewGetUseCase(clientLogger, storage)
+	update := clients.NewUpdateUseCase(clientLogger, storage)
+	del := clients.NewDeleteUseCase(clientLogger, storage)
+
+	clientService := clients.NewService(add, list, get, update, del)
 
 	fiberApp := fiber.New()
-	http.MapRoutes(fiberApp, &healthService, &addClientSrv)
+	http.MapRoutes(fiberApp, &healthService, &clientService)
 	fiberApp.Listen(":3000")
 }

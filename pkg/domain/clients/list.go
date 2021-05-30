@@ -28,27 +28,27 @@ type ListRequest struct {
 }
 
 type ListRepo interface {
-	ListClients(filter Filter, pageSize, page uint) ([]Client, int64, error)
+	ListClients(filter Filter, pageSize, page uint) ([]Client, *int64, error)
 }
 
-type ListService interface {
+type ListUseCase interface {
 	List(req ListRequest) (*ListResponse, error)
 }
 
-type listService struct {
+type listUseCase struct {
 	logger Logger
 	repo   ListRepo
 }
 
-func NewListService(logger Logger, repo ListRepo) ListService {
-	return &listService{logger, repo}
+func NewListUseCase(logger Logger, repo ListRepo) ListUseCase {
+	return &listUseCase{logger, repo}
 }
 
-func (s *listService) List(req ListRequest) (*ListResponse, error) {
+func (s *listUseCase) List(req ListRequest) (*ListResponse, error) {
 	clients, total, err := s.repo.ListClients(req.Filters, req.PageSize, req.Page)
 	if err != nil {
 		s.logger.Err("Error getting clients", err)
 		return nil, errors.New(fmt.Sprintf("could not get clients: %s", err))
 	}
-	return &ListResponse{req.Page, total, clients}, nil
+	return &ListResponse{req.Page, *total, clients}, nil
 }

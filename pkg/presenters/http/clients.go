@@ -8,7 +8,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 )
 
-func createClient(s clients.AddingService) func(*fiber.Ctx) error {
+func createClient(s clients.AddUseCase) func(*fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 		newClientData := Client{}
 		err := c.BodyParser(&newClientData)
