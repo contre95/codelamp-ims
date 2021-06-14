@@ -12,6 +12,7 @@ import (
 )
 
 func main() {
+
 	fmt.Println("Hi")
 	db, _ := gorm.Open(sqlite.Open("db/ims.db"), &gorm.Config{})
 	sqlStorage := sql.NewStorage(db)

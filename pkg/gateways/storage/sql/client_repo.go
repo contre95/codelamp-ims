@@ -46,6 +46,7 @@ type Project struct {
 
 func (sql *SQLStorage) AddClient(c clients.Client) (*clients.ClientID, error) {
 	client := parseDomainClient(c)
+
 	result := sql.db.Create(client)
 	if result.Error != nil {
 		return nil, result.Error
