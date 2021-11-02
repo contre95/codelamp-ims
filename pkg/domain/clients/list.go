@@ -11,6 +11,12 @@ type ListResponse struct {
 	Clients   []Client
 }
 
+type ListRequest struct {
+	Filters  Filter
+	Page     uint
+	PageSize uint
+}
+
 type Filter struct {
 	Name          string
 	AdmissionDate string
@@ -19,12 +25,6 @@ type Filter struct {
 	Country       string
 	Tag           string
 	OrderBy       string
-}
-
-type ListRequest struct {
-	Filters  Filter
-	Page     uint
-	PageSize uint
 }
 
 type ListRepo interface {
