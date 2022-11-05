@@ -6,7 +6,10 @@ import (
 	"codelamp-ims/pkg/gateways/logger"
 	"codelamp-ims/pkg/gateways/storage/sql"
 	"codelamp-ims/pkg/presenters/http"
+	"log"
+	"os"
 
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -30,7 +33,14 @@ func main() {
 
 	clientService := clients.NewService(add, list, get, update, del)
 
-	fiberApp := fiber.New()
-	http.MapRoutes(fiberApp, &healthService, &clientService)
-	fiberApp.Listen(":3000")
+	switch os.Args[1:][0] {
+	case "rest":
+		fiberApp := fiber.New()
+		http.MapRoutes(fiberApp, &healthService, &clientService)
+		fiberApp.Listen(":3000")
+	case "graphql":
+		graphql.MapRoutes()
+		log.Fatal(http.ListenAndServe(":3001", nil))
+
+	}
 }
