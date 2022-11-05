@@ -39,9 +39,11 @@ func main() {
 		fiberApp := fiber.New()
 		rest.MapRoutes(fiberApp, &healthService, &clientService)
 		fiberApp.Listen(":3000")
-	case "graphql":
+	case "gql":
 		graphql.MapRoutes(&healthService, &clientService)
 		log.Fatal(http.ListenAndServe(":3001", nil))
+	default:
+		log.Fatal("Please specify a type of server ('rest' or 'gql')")
 
 	}
 }
