@@ -5,11 +5,12 @@ import (
 	"codelamp-ims/pkg/domain/health"
 	"codelamp-ims/pkg/gateways/logger"
 	"codelamp-ims/pkg/gateways/storage/sql"
-	"codelamp-ims/pkg/presenters/http"
+	"codelamp-ims/pkg/presenters/graphql"
+	"codelamp-ims/pkg/presenters/rest"
 	"log"
+	"net/http"
 	"os"
 
-	"github.com/99designs/gqlgen/graphql"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -36,10 +37,10 @@ func main() {
 	switch os.Args[1:][0] {
 	case "rest":
 		fiberApp := fiber.New()
-		http.MapRoutes(fiberApp, &healthService, &clientService)
+		rest.MapRoutes(fiberApp, &healthService, &clientService)
 		fiberApp.Listen(":3000")
 	case "graphql":
-		graphql.MapRoutes()
+		graphql.MapRoutes(&healthService, &clientService)
 		log.Fatal(http.ListenAndServe(":3001", nil))
 
 	}

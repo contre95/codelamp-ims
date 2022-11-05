@@ -1,4 +1,4 @@
-package http
+package rest
 
 import (
 	"codelamp-ims/pkg/domain/clients"

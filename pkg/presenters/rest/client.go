@@ -1,4 +1,4 @@
-package http
+package rest
 
 type Client struct {
 	//ID   string
