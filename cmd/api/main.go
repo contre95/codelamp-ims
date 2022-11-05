@@ -44,6 +44,5 @@ func main() {
 		log.Fatal(http.ListenAndServe(":3001", nil))
 	default:
 		log.Fatal("Please specify a type of server ('rest' or 'gql')")
-
 	}
 }
