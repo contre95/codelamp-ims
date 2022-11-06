@@ -4,6 +4,7 @@ package graph
 // will be copied through when generating and any unknown code will be moved to the end.
 
 import (
+	"codelamp-ims/pkg/domain/clients"
 	"codelamp-ims/pkg/presenters/graphql/graph/generated"
 	"codelamp-ims/pkg/presenters/graphql/graph/model"
 	"context"
