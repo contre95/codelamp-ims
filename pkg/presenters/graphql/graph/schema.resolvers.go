@@ -28,7 +28,26 @@ func (r *mutationResolver) RefreshToken(ctx context.Context, input model.Refresh
 
 // Clients is the resolver for the clients field.
 func (r *queryResolver) Clients(ctx context.Context) ([]*model.Client, error) {
-	panic(fmt.Errorf("not implemented: Clients - clients"))
+	req := clients.ListRequest{
+		// Maybe no filter, so bring every client at first and let the client filter with graphql
+		Filters:  clients.Filter{},
+		Page:     0,
+		PageSize: 0,
+	}
+	resp, _ := r.Resolver.clientService.ListUseCase.List(req)
+	fmt.Println(resp.Clients)
+	var clients []*model.Client
+	for _, c := range resp.Clients {
+		client := model.Client{
+			ID:       string(rune(c.ID)),
+			Name:     c.Name,
+			Country:  c.Country,
+			Tag:      c.Tag,
+			Projects: []*model.Project{},
+		}
+		clients = append(clients, &client)
+	}
+	return clients, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.
