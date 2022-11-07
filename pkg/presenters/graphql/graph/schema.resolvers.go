@@ -16,6 +16,16 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 	panic(fmt.Errorf("not implemented: CreateUser - createUser"))
 }
 
+// CreateProject is the resolver for the createProject field.
+func (r *mutationResolver) CreateProject(ctx context.Context, input model.NewProject) (string, error) {
+	panic(fmt.Errorf("not implemented: CreateProject - createProject"))
+}
+
+// CreateClient is the resolver for the createClient field.
+func (r *mutationResolver) CreateClient(ctx context.Context, input model.NewClient) (string, error) {
+	panic(fmt.Errorf("not implemented: CreateClient - createClient"))
+}
+
 // Login is the resolver for the login field.
 func (r *mutationResolver) Login(ctx context.Context, input model.Login) (string, error) {
 	panic(fmt.Errorf("not implemented: Login - login"))

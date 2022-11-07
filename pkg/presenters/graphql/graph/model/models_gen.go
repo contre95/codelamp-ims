@@ -15,6 +15,20 @@ type Login struct {
 	Password string `json:"password"`
 }
 
+type NewClient struct {
+	Name          string `json:"name"`
+	AdmissionDate string `json:"admissionDate"`
+	FinishDate    string `json:"finishDate"`
+	Website       string `json:"website"`
+	Country       string `json:"country"`
+	Tag           string `json:"tag"`
+}
+
+type NewProject struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
+}
+
 type NewUser struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -31,6 +45,5 @@ type RefreshTokenInput struct {
 }
 
 type User struct {
-	ID   string `json:"id"`
 	Name string `json:"name"`
 }

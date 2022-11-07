@@ -17,12 +17,16 @@ type Project {
 }
 
 type User {
-  id: ID!
   name: String!
 }
 
 type Query {
   clients: [Client!]!
+}
+
+input Login {
+  username: String!
+  password: String!
 }
 
 input RefreshTokenInput{
@@ -34,13 +38,24 @@ input NewUser {
   password: String!
 }
 
-input Login {
-  username: String!
-  password: String!
+input NewProject {
+  name: String!
+  type: String!
+}
+
+input NewClient {
+  name: String!
+  admissionDate: String!
+  finishDate: String!
+  website: String!
+  country: String!
+  tag: String!
 }
 
 type Mutation {
   createUser(input: NewUser!): String!
+  createProject(input: NewProject!): String!
+  createClient(input: NewClient!): String!
   login(input: Login!): String!
   # we'll talk about this in authentication section
   refreshToken(input: RefreshTokenInput!): String!
