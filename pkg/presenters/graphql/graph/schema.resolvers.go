@@ -38,12 +38,20 @@ func (r *queryResolver) Clients(ctx context.Context) ([]*model.Client, error) {
 	fmt.Println(resp.Clients)
 	var clients []*model.Client
 	for _, c := range resp.Clients {
+		var projects []*model.Project
+		for _, p := range c.Projects {
+			projects = append(projects, &model.Project{
+				ID:   string(rune(p.ID)),
+				Name: p.Name,
+				Type: string(p.Type),
+			})
+		}
 		client := model.Client{
 			ID:       string(rune(c.ID)),
 			Name:     c.Name,
 			Country:  c.Country,
 			Tag:      c.Tag,
-			Projects: []*model.Project{},
+			Projects: projects,
 		}
 		clients = append(clients, &client)
 	}
