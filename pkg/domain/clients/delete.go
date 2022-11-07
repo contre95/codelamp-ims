@@ -39,7 +39,7 @@ func NewDeleteUseCase(logger Logger, repo DeleteRepo) DeleteUseCase {
 func (s *deleteUseCase) Delete(req DeleteRequest) (*DeleteResponse, error) {
 	client, err := s.repo.DeleteClient(req.ID)
 	if err != nil {
-		s.logger.Err("Error updating client", err)
+		s.logger.Err("Error updating client", err.Error())
 		return nil, errors.New("Could not Delete client information.")
 	}
 	resp := &DeleteResponse{

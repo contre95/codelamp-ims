@@ -51,7 +51,7 @@ func (s *listUseCase) List(req ListRequest) (*ListResponse, error) {
 	}
 	clients, total, err := s.repo.ListClients(req.Filters, req.PageSize, req.Page)
 	if err != nil {
-		s.logger.Err("Error getting clients", err)
+		s.logger.Err("Error getting clients", err.Error())
 		return nil, errors.New(fmt.Sprintf("could not get clients: %s", err))
 	}
 	return &ListResponse{req.Page, *total, clients}, nil

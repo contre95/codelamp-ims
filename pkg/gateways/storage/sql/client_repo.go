@@ -23,7 +23,6 @@ type Client struct {
 	Country       string
 	Tag           string
 	Projects      []Project
-	//Contacts      []contacts.ContactID
 }
 
 type ProjectID int
@@ -41,7 +40,6 @@ type Project struct {
 	State         string
 	Tag           string
 	ClientID      uint
-	Contacts      []Contact
 }
 
 func (sql *SQLStorage) AddClient(c clients.Client) (*clients.ClientID, error) {

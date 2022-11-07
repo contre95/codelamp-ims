@@ -33,7 +33,7 @@ func NewGetUseCase(logger Logger, repo GetRepo) GetUseCase {
 func (s *getUseCase) Get(req GetRequest) (*GetResponse, error) {
 	client, err := s.repo.GetClient(req.ID)
 	if err != nil {
-		s.logger.Err("Error getting client with ID: %v", err)
+		s.logger.Err("Error getting client with ID: %v", err.Error())
 		return nil, errors.New(fmt.Sprint("Couldn't get client data: ", err))
 	}
 	resp := &GetResponse{*client}

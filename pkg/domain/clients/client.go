@@ -1,7 +1,6 @@
 package clients
 
 import (
-	"codelamp-ims/pkg/domain/contacts"
 	"errors"
 	"fmt"
 	"regexp"
@@ -22,7 +21,6 @@ type Client struct {
 	Website       string `validate:"url"`
 	Country       string `validate:"required,min=3,max=32"`
 	Tag           string `validate:"isValidTag"`
-	Contacts      []contacts.ContactID
 	Projects      []Project
 }
 

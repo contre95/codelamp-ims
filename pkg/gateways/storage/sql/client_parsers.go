@@ -2,7 +2,6 @@ package sql
 
 import (
 	"codelamp-ims/pkg/domain/clients"
-	"codelamp-ims/pkg/domain/contacts"
 )
 
 func parseDBProjects(dbps []Project) []clients.Project {
@@ -13,10 +12,6 @@ func parseDBProjects(dbps []Project) []clients.Project {
 	return projects
 }
 func parseDBProject(dbp Project) *clients.Project {
-	var contactsIDs []contacts.ContactID
-	for _, cid := range dbp.Contacts {
-		contactsIDs = append(contactsIDs, contacts.ContactID(cid.ID))
-	}
 	return &clients.Project{
 		ID:            clients.ProjectID(dbp.ID),
 		Name:          dbp.Name,
@@ -27,7 +22,6 @@ func parseDBProject(dbp Project) *clients.Project {
 		Type:          clients.ProjectType(dbp.Type),
 		Tag:           dbp.Tag,
 		State:         clients.ProjectState(dbp.State),
-		Contacts:      contactsIDs,
 	}
 }
 
@@ -45,7 +39,6 @@ func parseDomainClient(c clients.Client) *Client {
 		Country:       c.Country,
 		Tag:           c.Tag,
 		Projects:      dbProjects,
-		//Contacts:      c.Contacts,     // Am I getting contacts here ? No I'm not
 	}
 }
 
@@ -58,12 +51,6 @@ func parseDBClients(dbcs []Client) []clients.Client {
 }
 
 func parseDBClient(dbc Client) *clients.Client {
-	var contactsIDs []contacts.ContactID
-	for _, p := range dbc.Projects {
-		for _, cid := range p.Contacts {
-			contactsIDs = append(contactsIDs, contacts.ContactID(cid.ID))
-		}
-	}
 	var projects []clients.Project
 	for _, dbp := range dbc.Projects {
 		projects = append(projects, *parseDBProject(dbp))
@@ -77,7 +64,6 @@ func parseDBClient(dbc Client) *clients.Client {
 		Website:       dbc.Website,
 		Country:       dbc.Country,
 		Tag:           dbc.Tag,
-		Contacts:      contactsIDs, // Client contacts are all contacts withing its projects
 		Projects:      projects,
 	}
 }

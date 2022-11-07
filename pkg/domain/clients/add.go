@@ -44,7 +44,7 @@ func (s *addUseCase) Add(req AddRequest) (*AddResponse, error) {
 	}
 	cid, err := s.repo.AddClient(*newClient)
 	if err != nil {
-		s.logger.Err("Error creating client: %v", err)
+		s.logger.Err("Error creating client: %v", err.Error())
 		return nil, errors.New(fmt.Sprintf("%v", err))
 	}
 	return &AddResponse{ID: *cid}, nil

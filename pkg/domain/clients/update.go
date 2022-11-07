@@ -43,7 +43,7 @@ func (s *updateUseCase) UpdateDetailsUseCase(req UpdateRequest) (*UpdateResponse
 	}
 	err = s.repo.UpdateClientDetails(*client)
 	if err != nil {
-		s.logger.Err("Error updating client", err)
+		s.logger.Err("Error updating client", err.Error())
 		return nil, errors.New("Could not update client information.")
 	}
 	return &UpdateResponse{}, nil

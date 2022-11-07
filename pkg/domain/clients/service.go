@@ -9,10 +9,10 @@ type Service struct {
 }
 
 type Logger interface {
-	Info(format string, i ...interface{})
-	Warn(format string, i ...interface{})
-	Err(format string, i ...interface{})
-	Debug(format string, i ...interface{})
+	Info(format string, i ...string)
+	Warn(format string, i ...string)
+	Err(format string, i ...string)
+	Debug(format string, i ...string)
 }
 
 func NewService(a AddUseCase, l ListUseCase, g GetUseCase, u UpdateUseCase, d DeleteUseCase) Service {

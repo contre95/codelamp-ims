@@ -13,7 +13,6 @@ func NewStorage(db *gorm.DB) *SQLStorage {
 }
 
 func (sql *SQLStorage) Migrate() {
-	sql.db.AutoMigrate(&Contact{})
 	sql.db.AutoMigrate(&Client{})
 	sql.db.AutoMigrate(&Project{})
 
