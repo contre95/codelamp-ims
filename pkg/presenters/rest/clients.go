@@ -102,9 +102,3 @@ func listClients(s clients.ListUseCase) func(*fiber.Ctx) error {
 		})
 	}
 }
-
-//func sampleHanlder(s clients.Service) func(*fiber.Ctx) error {
-//return func(c *fiber.Ctx) error {
-//return nil
-//}
-//}
